@@ -1,8 +1,7 @@
-import json
-
 from django.http import JsonResponse
 from django.templatetags.static import static
 
+from rest_framework.decorators import api_view
 
 from .models import (
     Order,
@@ -63,10 +62,11 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
     try:
-        about_order = json.loads(request.read())
-    except Exception:
+        about_order = request.data
+    except Exception:  # FIXME
         raise
     else:
         order = Order.objects.create(firstname=about_order['firstname'],
