@@ -12,6 +12,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.vscode/
 build/
 develop-eggs/
 dist/
@@ -145,3 +146,4 @@ cython_debug/
 
 # Personal
 for_project/
+.flake8

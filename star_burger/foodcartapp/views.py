@@ -1,12 +1,14 @@
 import json
 
-from pprint import pprint
-
 from django.http import JsonResponse
 from django.templatetags.static import static
 
 
-from .models import Product
+from .models import (
+    Order,
+    OrderItem,
+    Product,
+)
 
 
 def banners_list_api(request):
@@ -64,8 +66,20 @@ def product_list_api(request):
 def register_order(request):
     try:
         about_order = json.loads(request.read())
-        pprint(about_order, sort_dicts=False)
     except Exception:
         raise
+    else:
+        order = Order.objects.create(firstname=about_order['firstname'],
+                                     lastname=about_order['lastname'],
+                                     phonenumber=about_order['phonenumber'],
+                                     delivery_address=about_order['address'])
+        products = about_order['products']
+        for product in products:
+            product_id = product['product']
+            prod = Product.objects.get(id=product_id)  # FIXME
+            quantity = product['quantity']
+            order_item = OrderItem.objects.create(product=prod,
+                                                  order=order,
+                                                  quantity=quantity)
 
     return JsonResponse({})
