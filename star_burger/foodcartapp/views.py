@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
 
+from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import (
     Order,
@@ -64,22 +66,22 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-    try:
-        about_order = request.data
-    except Exception:  # FIXME
-        raise
-    else:
-        order = Order.objects.create(firstname=about_order['firstname'],
-                                     lastname=about_order['lastname'],
-                                     phonenumber=about_order['phonenumber'],
-                                     delivery_address=about_order['address'])
-        products = about_order['products']
-        for product in products:
-            product_id = product['product']
-            prod = Product.objects.get(id=product_id)  # FIXME
-            quantity = product['quantity']
-            order_item = OrderItem.objects.create(product=prod,
-                                                  order=order,
-                                                  quantity=quantity)
+    about_order = request.data  # FIXME
+    products = about_order.get('products', None)
+    if isinstance(products, str) or not products:
+        content = {'error': '"products" key not presented or not list'}
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({})
+    order = Order.objects.create(firstname=about_order['firstname'],
+                                 lastname=about_order['lastname'],
+                                 phonenumber=about_order['phonenumber'],
+                                 delivery_address=about_order['address'])
+    for product in products:
+        product_id = product['product']
+        prod = Product.objects.get(id=product_id)  # FIXME
+        quantity = product['quantity']
+        order_item = OrderItem.objects.create(product=prod,
+                                              order=order,
+                                              quantity=quantity)
+
+    return Response({}, status=status.HTTP_200_OK)
