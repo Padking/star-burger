@@ -11,6 +11,8 @@ from .models import (
     Product,
 )
 
+from .helper import validate_order_fields
+
 
 def banners_list_api(request):
     # FIXME move data to db?
@@ -67,18 +69,16 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     about_order = request.data  # FIXME
-    products = about_order.get('products', None)
-    if isinstance(products, str) or not products:
-        content = {'error': '"products" key not presented or not list'}
-        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    validate_order_fields(about_order)
 
     order = Order.objects.create(firstname=about_order['firstname'],
                                  lastname=about_order['lastname'],
                                  phonenumber=about_order['phonenumber'],
                                  delivery_address=about_order['address'])
-    for product in products:
+
+    for product in about_order['products']:
         product_id = product['product']
-        prod = Product.objects.get(id=product_id)  # FIXME
+        prod = Product.objects.get(id=product_id)
         quantity = product['quantity']
         order_item = OrderItem.objects.create(product=prod,
                                               order=order,
