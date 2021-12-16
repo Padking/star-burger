@@ -12,6 +12,7 @@ from .models import (
 )
 
 from .helper import validate_order_fields
+from .serializers import OrderSerializer
 
 
 def banners_list_api(request):
@@ -68,15 +69,16 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-    about_order = request.data  # FIXME
-    validate_order_fields(about_order)
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
-    order = Order.objects.create(firstname=about_order['firstname'],
-                                 lastname=about_order['lastname'],
-                                 phonenumber=about_order['phonenumber'],
-                                 delivery_address=about_order['address'])
+    validated_order = serializer.validated_data
+    order = Order.objects.create(firstname=validated_order['firstname'],
+                                 lastname=validated_order['lastname'],
+                                 phonenumber=validated_order['phonenumber'],
+                                 delivery_address=validated_order['delivery_address'])
 
-    for product in about_order['products']:
+    for product in validated_order['products']:
         product_id = product['product']
         prod = Product.objects.get(id=product_id)
         quantity = product['quantity']
