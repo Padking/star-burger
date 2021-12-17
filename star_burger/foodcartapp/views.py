@@ -86,4 +86,7 @@ def register_order(request):
                                               order=order,
                                               quantity=quantity)
 
-    return Response({}, status=status.HTTP_200_OK)
+    preserialized_order = OrderSerializer(order)
+    serialized_order = preserialized_order.data
+
+    return Response(serialized_order, status=status.HTTP_200_OK)
