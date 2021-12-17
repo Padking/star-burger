@@ -126,6 +126,11 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
+
+    class Status(models.TextChoices):
+        PROCESSED = 'Обр.', 'Обработан'
+        UNPROCESSED = 'Необр.', 'Необработан'
+
     firstname = models.CharField(
         'имя',
         max_length=100
@@ -142,6 +147,14 @@ class Order(models.Model):
     phonenumber = PhoneNumberField(
         'телефон',
         db_index=True
+    )
+
+    status = models.CharField(
+        max_length=32,
+        choices=Status.choices,
+        default=Status.UNPROCESSED,
+        db_index=True,
+        verbose_name='статус',
     )
 
     class Meta:
