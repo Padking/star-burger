@@ -3,6 +3,11 @@ from django.core.validators import MinValueValidator
 
 from phonenumber_field.modelfields import PhoneNumberField
 
+from .managers import (
+    OrderQuerySet,
+    ProductQuerySet,
+)
+
 
 class Restaurant(models.Model):
     name = models.CharField(
@@ -26,16 +31,6 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class ProductQuerySet(models.QuerySet):
-    def available(self):
-        products = (
-            RestaurantMenuItem.objects
-            .filter(availability=True)
-            .values_list('product')
-        )
-        return self.filter(pk__in=products)
 
 
 class ProductCategory(models.Model):
@@ -156,6 +151,8 @@ class Order(models.Model):
         db_index=True,
         verbose_name='статус',
     )
+
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'заказ'

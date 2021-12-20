@@ -100,6 +100,10 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
+
+    order_status = Order.Status.UNPROCESSED
+    unprocessed_orders = Order.objects.filter(status=order_status).fetch_with_cost()
+
     return render(request, template_name='order_items.html', context={
-        'order_items': Order.objects.filter(status='Необр.'),
+        'order_items': unprocessed_orders,
     })
