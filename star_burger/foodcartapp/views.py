@@ -11,7 +11,6 @@ from .models import (
     Product,
 )
 
-from .helper import validate_order_fields
 from .serializers import OrderSerializer
 
 
@@ -84,7 +83,8 @@ def register_order(request):
         quantity = product['quantity']
         order_item = OrderItem.objects.create(product=prod,
                                               order=order,
-                                              quantity=quantity)
+                                              quantity=quantity,
+                                              price=prod.price)
 
     preserialized_order = OrderSerializer(order)
     serialized_order = preserialized_order.data

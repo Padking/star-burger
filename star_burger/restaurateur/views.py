@@ -14,6 +14,7 @@ from foodcartapp.models import (
     Restaurant
 )
 
+
 class Login(forms.Form):
     username = forms.CharField(
         label='Логин', max_length=75, required=True,

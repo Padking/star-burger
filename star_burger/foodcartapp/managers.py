@@ -7,7 +7,7 @@ class OrderQuerySet(m.QuerySet):
 
     def fetch_with_cost(self):
         prices_values_by_product = (m.F('items__quantity')
-                                    * m.F('items__product__price'))
+                                    * m.F('items__price'))
 
         orders_with_cost_field = self.annotate(cost=m.Sum(prices_values_by_product))
 
