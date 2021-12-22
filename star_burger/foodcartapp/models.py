@@ -128,6 +128,11 @@ class Order(models.Model):
         PROCESSED = 'Обр.', 'Обработан'
         UNPROCESSED = 'Необр.', 'Необработан'
 
+    class PaymentMethod(models.TextChoices):
+        CASH = 'Налич.', 'Наличными'
+        EMONEY = 'Эл.', 'Электронными'
+        UNDEFINED = 'Не указ.', 'Не указано'
+
     firstname = models.CharField(
         'имя',
         max_length=100
@@ -152,6 +157,14 @@ class Order(models.Model):
         default=Status.UNPROCESSED,
         db_index=True,
         verbose_name='статус',
+    )
+
+    payment_method = models.CharField(
+        max_length=32,
+        choices=PaymentMethod.choices,
+        default=PaymentMethod.UNDEFINED,
+        db_index=True,
+        verbose_name='способ оплаты',
     )
 
     comment = models.TextField(
