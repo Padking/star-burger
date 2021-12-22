@@ -1,11 +1,13 @@
-from pprint import pp, pprint
+from pprint import pprint
 
+from django.conf import settings
 from django.contrib import admin
-from django.db import models
-from django.db.models import fields
-from django.shortcuts import reverse
+from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.templatetags.static import static
+from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .models import (
     Order,
@@ -130,3 +132,15 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [
         OrderItemInline
     ]
+
+    def response_change(self, request, obj) -> HttpResponse:
+        redirect_field_name = 'next'
+        response = super().response_change(request, obj)
+        path_to_redirect = request.GET.get(redirect_field_name, None)
+
+        url_allowed = url_has_allowed_host_and_scheme(path_to_redirect,
+                                                      settings.ALLOWED_HOSTS)
+        if path_to_redirect and url_allowed:
+            return redirect(path_to_redirect)
+        else:
+            return response
