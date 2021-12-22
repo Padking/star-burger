@@ -1,5 +1,8 @@
+from pprint import pp, pprint
+
 from django.contrib import admin
 from django.db import models
+from django.db.models import fields
 from django.shortcuts import reverse
 from django.templatetags.static import static
 from django.utils.html import format_html
@@ -108,7 +111,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductCategory)
-class ProductAdmin(admin.ModelAdmin):
+class ProductCategoryAdmin(admin.ModelAdmin):
     pass
 
 
