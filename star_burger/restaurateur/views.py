@@ -103,7 +103,9 @@ def view_restaurants(request):
 def view_orders(request):
 
     order_status = Order.Status.UNPROCESSED
-    unprocessed_orders = Order.objects.filter(status=order_status).fetch_with_cost()
+    unprocessed_orders = (Order.objects.filter(status=order_status)
+                          .fetch_with_cost()
+                          .fetch_with_restaurant())
 
     return render(request, template_name='order_items.html', context={
         'order_items': unprocessed_orders,

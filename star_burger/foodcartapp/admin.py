@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
@@ -44,18 +42,25 @@ class RestaurantAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    inlines = [
+        RestaurantMenuItemInline
+    ]
+
     list_display = [
         'get_image_list_preview',
         'name',
         'category',
         'price',
     ]
+
     list_display_links = [
         'name',
     ]
+
     list_filter = [
         'category',
     ]
+
     search_fields = [
         # FIXME SQLite can not convert letter case for cyrillic words properly, so search will be buggy.
         # Migration to PostgreSQL is necessary
@@ -63,9 +68,6 @@ class ProductAdmin(admin.ModelAdmin):
         'category__name',
     ]
 
-    inlines = [
-        RestaurantMenuItemInline
-    ]
     fieldsets = (
         ('Общее', {
             'fields': [
@@ -124,6 +126,10 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    inlines = [
+        OrderItemInline
+    ]
+
     list_display = [
         'status',
         'firstname',
@@ -135,8 +141,8 @@ class OrderAdmin(admin.ModelAdmin):
         'status',
     ]
 
-    inlines = [
-        OrderItemInline
+    raw_id_fields = [
+        'restaurant',
     ]
 
     def response_change(self, request, obj) -> HttpResponse:
