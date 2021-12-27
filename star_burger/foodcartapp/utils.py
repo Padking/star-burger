@@ -19,7 +19,7 @@ def fetch_coordinates(apikey, address):
     most_relevant = found_places[0]
     lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
 
-    return lon, lat
+    return lat, lon
 
 
 if __name__ == '__main__':
@@ -27,6 +27,6 @@ if __name__ == '__main__':
     address = 'Серпуховская'
 
     coords = fetch_coordinates(yandex_http_geocoder_api, address)
-    message_template = 'Долгота: {}, Широта: {}'
+    message_template = 'Долгота: {1}, Широта: {0}'
     msg = message_template.format(*coords)
     print(msg)

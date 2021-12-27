@@ -27,7 +27,7 @@
 
     {% for item in order_items %}
       <tr>
-        <td>{{ item.id }}</td>
+        <td>{{ item.pk }}</td>
         <td>{{ item.get_status_display }}</td>
         <td>{{ item.get_payment_method_display }}</td>
         <td>{{ item.cost }} руб.</td>
@@ -39,8 +39,10 @@
           <details>
               <summary>Смотреть</summary>
               <ul>
-                {% for restaurant in item.restaurants %}
-                  <li>{{ restaurant.name }}</li>
+                {% for order_id, restaurants_to_distance in order_map_to_restaurant_and_distance.items %}
+                  {% for restaurant_name, distance in restaurants_to_distance %}
+                    <li>{{ restaurant_name }} - {{ distance|stringformat:".3f" }} км.</li>
+                  {% endfor %}
                 {% endfor %}
               </ul>
           </details>

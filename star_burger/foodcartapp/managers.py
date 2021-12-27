@@ -1,6 +1,12 @@
+from collections import defaultdict
+
+from django.conf import settings
 from django.db import models as m
+from geopy.distance import distance
 
 from foodcartapp import models
+
+from .utils import fetch_coordinates
 
 
 class OrderQuerySet(m.QuerySet):
@@ -35,6 +41,34 @@ class OrderQuerySet(m.QuerySet):
             querysets = []
 
         return self
+
+    def fetch_with_distances(self, order_map_to_restaurant_and_distance=None):
+
+        order_map_to_restaurant_and_distance = (
+            order_map_to_restaurant_and_distance or defaultdict(list)
+        )
+        yandex_http_geocoder_api = settings.YANDEX_HTTP_GEOCODER_API
+
+        for order in self:
+            delivery_address_coords = fetch_coordinates(yandex_http_geocoder_api,
+                                                        order.delivery_address)
+            for restaurant in order.restaurants:
+                restaurant_address_coords = fetch_coordinates(yandex_http_geocoder_api,
+                                                              restaurant.address)
+                try:
+                    _distance = distance(delivery_address_coords,
+                                         restaurant_address_coords).km
+                except ValueError:
+                    # Расстояние между точками вычислить не удалось
+                    _distance = None
+                order_map_to_restaurant_and_distance[order.pk].append((restaurant.name, _distance))
+
+        sorted_by_distance = {order: sorted(restaurants_to_distance,
+                                            key=lambda restaurant_to_distance: restaurant_to_distance[1])
+                              for order, restaurants_to_distance
+                              in order_map_to_restaurant_and_distance.items()}
+
+        return sorted_by_distance
 
 
 class ProductQuerySet(m.QuerySet):

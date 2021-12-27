@@ -107,6 +107,9 @@ def view_orders(request):
                           .fetch_with_cost()
                           .fetch_with_restaurant())
 
+    order_map_to_restaurant_and_distance = unprocessed_orders.fetch_with_distances()
+
     return render(request, template_name='order_items.html', context={
         'order_items': unprocessed_orders,
+        'order_map_to_restaurant_and_distance': order_map_to_restaurant_and_distance,
     })
