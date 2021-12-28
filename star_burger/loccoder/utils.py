@@ -1,6 +1,7 @@
 import requests
 
 from django.conf import settings
+from django.db.models import QuerySet
 
 
 def fetch_coordinates(apikey, address):
@@ -20,6 +21,21 @@ def fetch_coordinates(apikey, address):
     lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
 
     return lat, lon
+
+
+def get_obj_from_db(locations: QuerySet, address: str, defaults=None,
+                    yandex_http_geocoder_api=settings.YANDEX_HTTP_GEOCODER_API):
+
+    if not locations.filter(address=address).exists():
+        lat, lon = fetch_coordinates(yandex_http_geocoder_api,
+                                     address)
+        defaults = {
+            'latitude': lat,
+            'longitude': lon,
+        }
+    location, _ = locations.get_or_create(address=address,
+                                          defaults=defaults)
+    return location
 
 
 if __name__ == '__main__':

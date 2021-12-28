@@ -18,14 +18,17 @@ DEBUG = env.bool('DEBUG', True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
 INSTALLED_APPS = [
-    'foodcartapp.apps.FoodcartappConfig',
-    'restaurateur.apps.RestaurateurConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Custom
+    'foodcartapp.apps.FoodcartappConfig',
+    'loccoder.apps.LoccoderConfig',
+    'restaurateur.apps.RestaurateurConfig',
 
     # Third-party
     'debug_toolbar',

@@ -40,9 +40,11 @@
               <summary>Смотреть</summary>
               <ul>
                 {% for order_id, restaurants_to_distance in order_map_to_restaurant_and_distance.items %}
-                  {% for restaurant_name, distance in restaurants_to_distance %}
-                    <li>{{ restaurant_name }} - {{ distance|stringformat:".3f" }} км.</li>
-                  {% endfor %}
+                  {% if order_id == item.pk %}
+                    {% for restaurant_name, distance in restaurants_to_distance %}
+                      <li>{{ restaurant_name }} - {{ distance|stringformat:".3f" }} км.</li>
+                    {% endfor %}
+                  {% endif %}
                 {% endfor %}
               </ul>
           </details>
