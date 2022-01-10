@@ -225,7 +225,12 @@ class OrderItem(models.Model):
         related_name='items',
         verbose_name='заказ'
     )
-    quantity = models.SmallIntegerField('кол-во')
+    quantity = models.SmallIntegerField(
+        'кол-во',
+        validators=[
+            MinValueValidator(limit_value=1, message='значение д.б. больше нуля'),
+        ]
+    )
 
     price = models.DecimalField(
         'цена на момент заказа',
