@@ -1,22 +1,22 @@
 from collections import defaultdict
 
-from django.db import models as m
+from django.db import models
 from geopy.distance import distance
 
-from foodcartapp import models
-from loccoder.models import Location
+from foodcartapp import models as foodcart_models
+from loccoder import models as loccoder_models
 
 from loccoder.utils import get_obj_from_db
 
 
-class OrderQuerySet(m.QuerySet):
+class OrderQuerySet(models.QuerySet):
 
     def fetch_with_cost(self):
         prices_values_by_product = (
-            m.F('items__quantity') * m.F('items__price')
+            models.F('items__quantity') * models.F('items__price')
         )
 
-        orders_with_cost_field = self.annotate(cost=m.Sum(prices_values_by_product))
+        orders_with_cost_field = self.annotate(cost=models.Sum(prices_values_by_product))
 
         return orders_with_cost_field
 
@@ -35,7 +35,7 @@ class OrderQuerySet(m.QuerySet):
 
             suitable_restaurants_ids_per_order = (suitable_restaurants_ids_per_order_item
                                                   .intersection(*querysets[:-1]))
-            suitable_restaraunts = (models.Restaurant.objects
+            suitable_restaraunts = (foodcart_models.Restaurant.objects
                                     .filter(id__in=suitable_restaurants_ids_per_order))
             order.restaurants = suitable_restaraunts
             querysets = []
@@ -48,7 +48,7 @@ class OrderQuerySet(m.QuerySet):
             order_map_to_restaurant_and_distance or defaultdict(list)
         )
 
-        locations = Location.objects.all()
+        locations = loccoder_models.Location.objects.all()
 
         for order in self:
             order_location = get_obj_from_db(locations, order.delivery_address)
@@ -81,9 +81,9 @@ class OrderQuerySet(m.QuerySet):
         return sorted_by_distance
 
 
-class ProductQuerySet(m.QuerySet):
+class ProductQuerySet(models.QuerySet):
     def available(self):
-        products = (models.RestaurantMenuItem.objects
+        products = (foodcart_models.RestaurantMenuItem.objects
                     .filter(availability=True)
                     .values_list('product'))
 
