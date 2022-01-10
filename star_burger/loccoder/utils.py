@@ -27,12 +27,15 @@ def get_obj_from_db(locations: QuerySet, address: str, defaults=None,
                     yandex_http_geocoder_api=settings.YANDEX_HTTP_GEOCODER_API):
 
     if not locations.filter(address=address).exists():
-        lat, lon = fetch_coordinates(yandex_http_geocoder_api,
-                                     address)
-        defaults = {
-            'latitude': lat,
-            'longitude': lon,
-        }
+        if location_coords := fetch_coordinates(yandex_http_geocoder_api,
+                                                address):
+            defaults = {
+                'latitude': location_coords[0],
+                'longitude': location_coords[1],
+            }
+        else:  # Адрес не валидный
+            return
+
     location, _ = locations.get_or_create(address=address,
                                           defaults=defaults)
     return location

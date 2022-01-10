@@ -51,10 +51,16 @@ class OrderQuerySet(models.QuerySet):
         locations = loccoder_models.Location.objects.all()
 
         for order in self:
+
             order_location = get_obj_from_db(locations, order.delivery_address)
+            if not order_location:
+                continue
 
             for restaurant in order.restaurants:
+
                 restaurant_location = get_obj_from_db(locations, restaurant.address)
+                if not restaurant_location:
+                    continue
 
                 delivery_address_coords = (
                     order_location.latitude, order_location.longitude
