@@ -245,7 +245,7 @@ class OrderItem(models.Model):
 
     def __str__(self):
         repr_text = (
-            f'{self.product.name} {self.order.firstname} '
-            f'{self.order.lastname} {self.order.delivery_address}'
+            f'Заказ с ID - {self.order.pk}, '
+            f'продукт - {self.product.name}'
         )
         return repr_text
