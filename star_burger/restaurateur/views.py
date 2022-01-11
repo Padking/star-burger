@@ -105,7 +105,7 @@ def view_orders(request):
     order_status = Order.Status.UNPROCESSED
     unprocessed_orders = (Order.objects.filter(status=order_status)
                           .fetch_with_cost()
-                          .fetch_with_restaurant())
+                          .fetch_with_restaurants())
 
     order_map_to_restaurant_and_distance = unprocessed_orders.fetch_with_distances()
 

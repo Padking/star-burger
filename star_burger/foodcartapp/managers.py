@@ -20,7 +20,7 @@ class OrderQuerySet(models.QuerySet):
 
         return orders_with_cost_field
 
-    def fetch_with_restaurant(self, querysets=None):
+    def fetch_with_restaurants(self, querysets=None):
 
         querysets = querysets or []
 
